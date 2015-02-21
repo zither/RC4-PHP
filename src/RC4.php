@@ -2,19 +2,26 @@
 
 class RC4 
 {
-    const ENCRYPT_MODE_UPDATE = 1;
-    const ENCRYPT_MODE_NORMAL = 0;
+    const ENCRYPT_MODE_NORMAL = 0x01;
+    const ENCRYPT_MODE_UPDATE = 0x02;
 
-    protected $password = null;
-    protected $encryptMode = false;
+    protected $password;
+    protected $encryptMode;
     protected $sBox = array();
     protected $si = 0;
     protected $sj = 0;
 
-    public function __construct($password, $mode = 0)
+    public function __construct($password, $encryptMode = 0x01)
     {
         $this->password = $password;
-        $this->encryptMode = $mode;
+        $validMode = array(
+            static::ENCRYPT_MODE_NORMAL, 
+            static::ENCRYPT_MODE_UPDATE
+        );
+        if ( ! in_array($encryptMode, $validMode)) {
+            throw new InvalidArgumentException("Invalid encrypt mode.");
+        }
+        $this->encryptMode = $encryptMode;
         $this->initCipher();
     }
 
@@ -47,7 +54,7 @@ class RC4
             $k = $this->sBox[($this->sBox[$this->si] + $this->sBox[$this->sj]) % 256];
             $ciphertext .= chr(ord($plaintext[$n]) ^ $k);
         }
-        if ($this->encryptMode === static::ENCRYPT_MODE_NORMAL) {
+        if ($this->encryptMode & static::ENCRYPT_MODE_NORMAL) {
             $this->resetCipher();
         }
         return $ciphertext;

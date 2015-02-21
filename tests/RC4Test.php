@@ -4,6 +4,9 @@ require dirname(__DIR__) . "/src/RC4.php";
 
 class RC4Test extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testConstruct()
     {
         $password = 'password';
@@ -13,6 +16,8 @@ class RC4Test extends PHPUnit_Framework_TestCase
 
         $encryptor = new RC4($password, RC4::ENCRYPT_MODE_UPDATE);
         $this->assertEquals(RC4::ENCRYPT_MODE_UPDATE, PHPUnit_Framework_Assert::readAttribute($encryptor, 'encryptMode'));
+
+        $encryptor = new RC4($password, 0x03);
     }
 
     public function testInitAndResetCipher()
@@ -46,6 +51,9 @@ class RC4Test extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, PHPUnit_Framework_Assert::readAttribute($encryptor, 'sj'));
     }
 
+    /**
+     * @depends testConstruct
+     */
     public function testNormalEncryptAndDecrypt()
     {
         $password = "password";
@@ -56,6 +64,9 @@ class RC4Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($plaintext, $decryptor->decrypt($ciphertext));
     }
 
+    /**
+     * @depends testConstruct
+     */
     public function testUpdateEncryptAndDecrypt()
     {
         $password = "password";
