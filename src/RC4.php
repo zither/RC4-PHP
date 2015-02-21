@@ -6,15 +6,15 @@ class RC4
     const ENCRYPT_MODE_NORMAL = 0;
 
     protected $password = null;
-    protected $mode = false;
-    protected $S = array();
-    protected $i = 0;
-    protected $j = 0;
+    protected $encryptMode = false;
+    protected $sBox = array();
+    protected $si = 0;
+    protected $sj = 0;
 
     public function __construct($password, $mode = 0)
     {
         $this->password = $password;
-        $this->mode = $mode;
+        $this->encryptMode = $mode;
         $this->initCipher();
     }
 
@@ -24,33 +24,38 @@ class RC4
         $key = array();
         for ($i = 0; $i < 256; $i++) {
             $key[$i] = ord($this->password[$i % $passwordLength]);
-            $this->S[$i] = $i;
+            $this->sBox[$i] = $i;
         }
         for ($j = $i = 0; $i < 256; $i ++) {
-            $j = ($j + $this->S[$i] + $key[$i]) % 256;
-            list($this->S[$i], $this->S[$j]) = array($this->S[$j], $this->S[$i]);
+            $j = ($j + $this->sBox[$i] + $key[$i]) % 256;
+            list($this->sBox[$i], $this->sBox[$j]) = array($this->sBox[$j], $this->sBox[$i]);
         }
-        $this->i = $this->j = 0;
+        $this->si = $this->sj = 0;
     }
 
     public function encrypt($plaintext) 
     {
         $plaintextLength = strlen($plaintext);
         $ciphertext = '';
-        if ($this->mode === static::ENCRYPT_MODE_NORMAL) {
-            $this->initCipher();
-        }
         for ($n = 0; $n < $plaintextLength; $n++) {
-            $this->i = ($this->i + 1) % 256;
-            $this->j = ($this->j + $this->S[$this->i]) % 256;
-            list($this->S[$this->i], $this->S[$this->j]) = array(
-                $this->S[$this->j], 
-                $this->S[$this->i]
+            $this->si = ($this->si + 1) % 256;
+            $this->sj = ($this->sj + $this->sBox[$this->si]) % 256;
+            list($this->sBox[$this->si], $this->sBox[$this->sj]) = array(
+                $this->sBox[$this->sj], 
+                $this->sBox[$this->sj]
             );
-            $K = $this->S[($this->S[$this->i] + $this->S[$this->j]) % 256];
-            $ciphertext .= chr(ord($plaintext[$n]) ^ $K);
+            $k = $this->sBox[($this->sBox[$this->si] + $this->sBox[$this->sj]) % 256];
+            $ciphertext .= chr(ord($plaintext[$n]) ^ $k);
+        }
+        if ($this->encryptMode === static::ENCRYPT_MODE_NORMAL) {
+            $this->resetCipher();
         }
         return $ciphertext;
+    }
+
+    protected function resetCipher()
+    {
+        $this->initCipher();
     }
 
     public function decrypt($plaintext)
