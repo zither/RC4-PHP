@@ -43,7 +43,7 @@ class RC4
     public function encrypt($plaintext) 
     {
         $plaintextLength = strlen($plaintext);
-        $ciphertext = '';
+        $ciphertext = "";
         for ($n = 0; $n < $plaintextLength; $n++) {
             $this->si = ($this->si + 1) % 256;
             $this->sj = ($this->sj + $this->sBox[$this->si]) % 256;
