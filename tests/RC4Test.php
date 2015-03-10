@@ -11,11 +11,11 @@ class RC4Test extends PHPUnit_Framework_TestCase
     {
         $password = "password";
         $encryptor = new RC4($password);
-        $this->assertEquals("password", PHPUnit_Framework_Assert::readAttribute($encryptor, "password"));
-        $this->assertEquals(RC4::ENCRYPT_MODE_NORMAL, PHPUnit_Framework_Assert::readAttribute($encryptor, "encryptMode"));
+        $this->assertAttributeEquals($password, "password", $encryptor);
+        $this->assertAttributeEquals(RC4::ENCRYPT_MODE_NORMAL, "encryptMode", $encryptor);
 
         $encryptor = new RC4($password, RC4::ENCRYPT_MODE_UPDATE);
-        $this->assertEquals(RC4::ENCRYPT_MODE_UPDATE, PHPUnit_Framework_Assert::readAttribute($encryptor, "encryptMode"));
+        $this->assertAttributeEquals(RC4::ENCRYPT_MODE_UPDATE, "encryptMode", $encryptor);
 
         $encryptor = new RC4($password, 0x03);
     }
@@ -41,14 +41,14 @@ class RC4Test extends PHPUnit_Framework_TestCase
             74,143,85,204,137,88,17,130,217,167,124,246,112,173,7,100
         );
         $encryptor = new RC4("password");
-        $this->assertEquals($sBox, PHPUnit_Framework_Assert::readAttribute($encryptor, "sBox"));
-        $this->assertEquals(0, PHPUnit_Framework_Assert::readAttribute($encryptor, "si"));
-        $this->assertEquals(0, PHPUnit_Framework_Assert::readAttribute($encryptor, "sj"));
+        $this->assertAttributeEquals($sBox, "sBox", $encryptor);
+        $this->assertAttributeEquals(0, "si", $encryptor);
+        $this->assertAttributeEquals(0, "sj", $encryptor);
 
         $encryptor->encrypt("plaintext");
-        $this->assertEquals($sBox, PHPUnit_Framework_Assert::readAttribute($encryptor, "sBox"));
-        $this->assertEquals(0, PHPUnit_Framework_Assert::readAttribute($encryptor, "si"));
-        $this->assertEquals(0, PHPUnit_Framework_Assert::readAttribute($encryptor, "sj"));
+        $this->assertAttributeEquals($sBox, "sBox", $encryptor);
+        $this->assertAttributeEquals(0, "si", $encryptor);
+        $this->assertAttributeEquals(0, "sj", $encryptor);
     }
 
     /**
