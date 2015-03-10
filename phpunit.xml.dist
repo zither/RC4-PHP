@@ -15,7 +15,9 @@
         </testsuite>
 
         <filter>
-            <directory>./src/</directory>
+            <whitelist>
+                <directory>./src/</directory>
+            </whitelist>
         </filter>
     </testsuites>
 </phpunit>
